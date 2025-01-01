@@ -1,41 +1,43 @@
 import subprocess
-import os
+import random
 from datetime import datetime
+import time
 
-# Logging setup
-LOG_FILE = "execution_log.txt"
+LOG_FILE = "simulation_log.txt"
 
 def log_message(message):
+    """Log a message with a timestamp."""
     timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-    with open(LOG_FILE, "a") as log_file:
-        log_file.write(f"[{timestamp}] {message}\n")
+    with open(LOG_FILE, "a") as log:
+        log.write(f"[{timestamp}] {message}\n")
 
-def run_script(script_path, script_type="python"):
+def execute_script(script_path, script_type="python"):
+    """Execute a script and log the result."""
     try:
+        log_message(f"Starting {script_path}")
         if script_type == "python":
             subprocess.run(["python", script_path], check=True)
         elif script_type == "powershell":
             subprocess.run(["powershell", "-ExecutionPolicy", "Bypass", "-File", script_path], check=True)
-        log_message(f"SUCCESS: {script_path} ran successfully.")
+        log_message(f"Completed {script_path}")
     except subprocess.CalledProcessError as e:
-        log_message(f"ERROR: Failed to run {script_path}. Error: {e}")
+        log_message(f"Error in {script_path}: {e}")
     except Exception as e:
-        log_message(f"CRITICAL ERROR: Unexpected issue with {script_path}. Error: {e}")
+        log_message(f"Critical error in {script_path}: {e}")
 
 if __name__ == "__main__":
-    # List of scripts to execute
     scripts = [
-        {"path": "scripts/browser_activity/browser_simulation.py", "type": "python"},
-        {"path": "scripts/email_simulation/email_generator.py", "type": "python"},
-        {"path": "scripts/financial_logs/generate_financial_logs.py", "type": "python"},
-        {"path": "scripts/log_manipulation/event_log_generator.ps1", "type": "powershell"},
-        {"path": "scripts/malware_simulation/malware_simulator.py", "type": "python"},
-        {"path": "scripts/network_traffic/network_traffic_generator.py", "type": "python"},
+        {"path": "browser_simulation.py", "type": "python"},
+        {"path": "email_simulation.py", "type": "python"},
+        {"path": "financial_logs.py", "type": "python"},
+        {"path": "log_manipulation.ps1", "type": "powershell"},
+        {"path": "malware_simulation.py", "type": "python"},
     ]
 
-    log_message("=== Script Execution Started ===")
-
+    log_message("Simulation started.")
     for script in scripts:
-        run_script(script["path"], script["type"])
-
-    log_message("=== Script Execution Finished ===")
+        execute_script(script["path"], script["type"])
+        delay = random.randint(300, 900)  # Realistic delay (5-15 minutes)
+        log_message(f"Waiting {delay} seconds before next script.")
+        time.sleep(delay)
+    log_message("Simulation completed.")

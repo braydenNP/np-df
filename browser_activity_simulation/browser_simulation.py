@@ -4,45 +4,66 @@ from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.chrome.options import Options
 import time
 import random
+import os
+from datetime import datetime
 
-def simulate_advanced_browsing():
+def manipulate_dns():
+    """Simulate DNS cache poisoning by redirecting bank traffic."""
+    with open("C:\\Windows\\System32\\drivers\\etc\\hosts", "a") as f:
+        f.write("203.0.113.25 www.fakebank.com\n")
+    print("[INFO] DNS cache manipulated to redirect bank traffic.")
+
+def simulate_browsing_activity():
+    """Simulate realistic browsing activity with hidden artifacts."""
     sites = [
-        {"url": "https://www.fakebank.com", "search_terms": ["secure account login", "transfer $25,000", "crypto wallet"]},
-        {"url": "https://www.cryptowallet.com", "search_terms": ["create anonymous wallet", "crypto mixer", "bitcoin laundering"]},
-        {"url": "https://darkwebforum.com", "search_terms": ["financial fraud methods", "money laundering services"]}
+        {"url": "https://www.fakebank.com", "search_terms": ["transfer $25,000 to crypto wallet", "disable fraud detection"]},
+        {"url": "https://www.cryptowallet.com", "search_terms": ["create anonymous wallet", "send BTC"]},
+        {"url": "https://darkwebforum.com", "search_terms": ["laundering money", "secure transactions"]}
     ]
 
-    # Browser configuration with obfuscation
     options = Options()
-    options.add_argument("--disable-blink-features=AutomationControlled")  # Disable automation detection
-    options.add_argument("user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36")
+    options.add_argument("--headless")
+    options.add_argument("--disable-blink-features=AutomationControlled")
+    options.add_argument("user-agent=Mozilla/5.0")
     driver = webdriver.Chrome(options=options)
 
     for site in sites:
+        driver.get(site["url"])
+        print(f"[INFO] Browsing {site['url']}")
+        time.sleep(random.uniform(2, 5))
+
         try:
-            driver.get(site["url"])
-            time.sleep(random.uniform(3, 7))  # Random delays
+            # Simulate searching
             search_box = driver.find_element(By.NAME, "q")
             search_term = random.choice(site["search_terms"])
             search_box.send_keys(search_term + Keys.RETURN)
-            time.sleep(random.uniform(3, 5))
-
-            # Simulate clicking on search results
-            results = driver.find_elements(By.TAG_NAME, "a")
-            if results:
-                results[random.randint(0, len(results) - 1)].click()
-                time.sleep(random.uniform(3, 8))
-
-            # Mimic downloading files
-            driver.get("https://example.com/fake_transaction_record.pdf")
             time.sleep(random.uniform(2, 4))
-        except Exception as e:
-            print(f"Error visiting site {site['url']}: {e}")
 
-    # Create cookies to mimic a session
-    driver.add_cookie({"name": "session_id", "value": "1234567890abcdef", "domain": "fakebank.com"})
+            # Interact with links
+            links = driver.find_elements(By.TAG_NAME, "a")
+            for link in links[:3]:
+                print(f"[INFO] Visiting link: {link.get_attribute('href')}")
+                link.click()
+                time.sleep(random.uniform(2, 5))
+
+            # Create temporary files (simulating downloaded malware)
+            temp_file = f"C:\\Temp\\{random.randint(1000,9999)}.tmp"
+            with open(temp_file, "w") as f:
+                f.write("Temporary session data...")
+            print(f"[INFO] Temporary file created: {temp_file}")
+        except Exception as e:
+            print(f"[ERROR] Error during browsing: {e}")
+
+    # Delete temporary files to simulate attacker cleanup
+    for temp_file in os.listdir("C:\\Temp"):
+        try:
+            os.remove(f"C:\\Temp\\{temp_file}")
+            print(f"[INFO] Temporary file deleted: {temp_file}")
+        except Exception as e:
+            print(f"[ERROR] Failed to delete temporary file: {e}")
 
     driver.quit()
 
 if __name__ == "__main__":
-    simulate_advanced_browsing()
+    manipulate_dns()
+    simulate_browsing_activity()
