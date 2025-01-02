@@ -1,3 +1,15 @@
+"""
+1. Uses scapy to send packets simulating:
+    - DNS requests to the malicious fake bank IP.
+    - Data exfiltration to external cryptocurrency wallets.
+
+2. Simulates command-and-control (C2) traffic.
+
+Relation to the Attack Scenario:
+    - Captures traffic patterns showing DNS poisoning and suspicious connections, aligning with the attacker’s actions.
+    - Provides investigators with a PCAP file that reveals the IPs, domains, and data transfers involved.
+"""
+
 import subprocess
 import os
 from datetime import datetime

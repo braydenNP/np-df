@@ -1,3 +1,16 @@
+"""
+1. Sequentially executes all scripts (browser simulation, email phishing, log manipulation, malware, and network traffic).
+
+2. Adds delays between script executions to mimic real-world attack timelines.
+
+3. Records which scripts ran successfully and any errors encountered.
+
+Relation to the Attack Scenario:
+    - Reflects how the attacker (Michael Tan) systematically executed multiple stages of the attack.
+    - Provides investigators with timestamps to reconstruct the sequence of events.
+    - Leaves behind logs that could reveal the attack’s orchestration.
+"""
+
 import subprocess
 import random
 from datetime import datetime
