@@ -1,18 +1,3 @@
-"""
-1. Creates a fake PDF (instructions_hidden.pdf) containing embedded exploit code.
-
-2. Sending Phishing Emails
-    - Email 1: From Rachel Simmons to Michael Tan, instructing him to disable security logging.
-    - Email 2: A spoofed email, sent from Alan Chow's account to Michael Tan, raising suspicion about Rachel Simmons.
-
-3. Adds forged headers to implicate Alan Chow and mislead investigators.
-
-Relation to the Attack Scenario:
-    - Mimics Rachel Simmons collaborating with Michael Tan to disable critical security features.
-    - Creates misleading evidence pointing to Alan Chow, adding complexity to the forensic investigation.
-    - Leaves behind the malicious PDF, which investigators can analyze to uncover its purpose.
-"""
-
 import smtplib
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart

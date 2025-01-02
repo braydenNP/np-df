@@ -1,23 +1,3 @@
-"""
-1. Simulates DNS cache poisoning by adding a fake bank entry to the hosts file, 
-redirecting traffic to a malicious IP.
-
-2. Uses Selenium to mimic browsing activity on financial and cryptocurrency websites, including:
-    - Visiting a fake bank.
-    - Searching for suspicious terms like "transfer $25,000 to crypto wallet."
-    - Visiting dark web forums to mimic money laundering research.
-
-3. Creates temporary files during the browsing session to simulate 
-malware downloads and then deletes them to mimic an attacker covering their tracks.
-
-Relation to the Attack Scenario:
-    - Redirects legitimate banking traffic to a malicious site, 
-      aligning with how the attacker might intercept Dr. Wong's credentials.
-    - Reflects an insider (Michael Tan) researching and executing unauthorized 
-      transfers using stolen credentials.
-    - Provides evidence for investigators in the form of residual artifacts, even after cleanup attempts.
-"""
-
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys

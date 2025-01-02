@@ -1,18 +1,3 @@
-"""
-1. Creates a SQLite database with fake transactions involving Dr. Wong, Michael Tan, and Rachel Simmons.
-
-2. Introduce Anomalies:
-    - Suspicious transfers over $20,000 linked to Michael Tan.
-    - Future timestamps to mimic log tampering.
-
-3. Associates transactions with suspicious IPs to indicate unauthorized remote access.
-
-Relation to the Attack Scenario:
-    - Creates realistic financial logs reflecting the unauthorized $25,000 transfer from Dr. Wong's account.
-    - Links suspicious transactions to Michael Tan and Rachel Simmons through IP addresses and anomalies.
-    - Provides a rich source of evidence for investigators to analyze patterns and anomalies.
-"""
-
 import sqlite3
 import random
 from datetime import datetime, timedelta
