@@ -25,7 +25,22 @@ def execute_script(script_path, script_type="python"):
     except Exception as e:
         log_message(f"Critical error in {script_path}: {e}")
 
+def setup_environment():
+    """Call create_dir.py to set up directories and files."""
+    try:
+        log_message("Starting create_dir.py")
+        subprocess.run(["python", "create_dir.py"], check=True)
+        log_message("create_dir.py completed successfully.")
+    except subprocess.CalledProcessError as e:
+        log_message(f"Error in create_dir.py: {e}")
+    except Exception as e:
+        log_message(f"Critical error in create_dir.py: {e}")
+
 if __name__ == "__main__":
+    # Step 1: Set up directories and files
+    setup_environment()
+
+    # Step 2: Execute the rest of the scripts
     scripts = [
         {"path": "browser_simulation.py", "type": "python"},
         {"path": "email_simulation.py", "type": "python"},
