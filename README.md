@@ -222,48 +222,44 @@ The Kali VM is used as the attacker’s machine to monitor network traffic, anal
 ```
 
 ### **Subdirectories**
-1. `/home/kali/scripts/`  
-Contains all scripts related to the attack.
-   ```
-   /home/kali/scripts/
-   ├── browser_activity/
-   │   └── browser_simulation.py
-   ├── email_simulation/
-   │   └── email_generator.py
-   ├── financial_logs/
-   │   └── generate_financial_logs.py
-   ├── log_manipulation/
-   │   └── event_log_generator.ps1
-   ├── malware_simulation/
-   │   └── malware_simulator.py
-   ├── network_traffic/
-   │   └── network_traffic_generator.py
-   ├── main.py
-   ```
-
-2. `/home/kali/evidence/`  
-Used to store evidence collected from the victim system during the investigation.
-   ```
+1. `/home/kali/evidence/`  
+   Used to store evidence collected from the victim system during the investigation.
+      ```
    /home/kali/evidence/
-   ├── memory_dump/
-   │   └── windows_memory_dump.raw
+   ├── memory_dumps/
+   │   └── windows_memory_dump.raw            # Memory dump of the victim VM
    ├── disk_images/
-   │   └── victim_disk_image.dd
-   ├── logs/
-   │   ├── network_traffic.pcap
-   │   ├── execution_log.txt
-   │   └── event_logs/
-   │       ├── Security.evtx
-   │       └── System.evtx
-   ├── browser_cache/
-   │   └── ChromeHistory.db
-   ├── financial_data/
-   │   └── financial_logs.db
-   └── emails/
-      └── phishing_emails.eml
+   │   └── victim_disk_image.dd               # Forensic disk image of the victim VM
+   ├── network_traffic/
+   │   └── network_traffic.pcap               # Captured PCAP file from Wireshark or Tshark
+   ├── windows_logs/
+   │   ├── Security.evtx                      # Exported security log from the victim VM
+   │   └── System.evtx                        # Exported system log from the victim VM
+   ├── extracted_artifacts/
+   │   ├── email_addresses.txt                # Extracted email addresses
+   │   ├── files/
+   │   │   ├── suspicious_attachment.pdf      # Extracted attachment from phishing emails
+   │   │   └── decrypted_sensitive_file.txt  # Recovered files from encryption
+   │   └── registry_analysis.txt              # Extracted registry keys from malware
+   ├── timelines/
+   │   └── forensic_timeline.csv              # Timeline generated using Plaso/log2timeline
+   ├── analysis_reports/
+   │   ├── final_report.docx                  # Comprehensive forensic investigation report
+   │   ├── screenshots/                       # Screenshots of tools during the analysis
+   │   │   ├── volatility_analysis.png
+   │   │   └── sleuthkit_file_carving.png
+   │   └── findings_summary.txt               # Summary of findings
+   ├── decrypted_files/
+   │   ├── financial_report.docx              # Files decrypted from ransomware
+   │   └── personal_data.txt
+   ├── registry_analysis/
+   │   └── registry_hive_analyzed.txt         # Registry artifacts analyzed for malicious entries
+   ├── process_analysis/
+   │   ├── running_processes.txt              # Extracted list of processes from memory analysis
+   │   └── malware_signature_analysis.txt     # Identified malicious processes
    ```
 
-3. `/home/kali/tools/`  
+12. `/home/kali/tools/`  
 Contains tools installed for forensic analysis (not real directory; in built tools).
    ```
    /home/kali/tools/
