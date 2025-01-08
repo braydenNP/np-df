@@ -95,3 +95,285 @@ This suite of scripts works together to simulate the attack scenario with a high
 - Reflects how the attacker (Michael Tan) systematically executed multiple stages of the attack.
 - Provides investigators with timestamps to reconstruct the sequence of events.
 - Leaves behind logs that could reveal the attack’s orchestration.
+
+# How to Start and Simulate the Attack on the VMs
+
+To simulate the attack scenario using the scripts and tools provided, follow these steps. The process assumes the **Kali Linux VM** is used as the attacker system and the **Windows VM** as the victim system.
+
+## **Setup and Configuration for Simulation**
+
+### **On the Windows Victim VM:**
+1. **Install Required Software:**
+   - **Python**: Ensure Python 3.x is installed.
+   - **PowerShell 7**: Install and configure PowerShell to allow script execution.
+     ```powershell
+     Set-ExecutionPolicy RemoteSigned
+     ```
+   - **Google Chrome**: Install Chrome for the browser simulation.
+   - **Papercut SMTP**: Configure a local SMTP email server for the phishing simulation.
+
+2. **Download Python Libraries:**
+   Run the following command to install required libraries:
+   ```bash
+   pip install selenium cryptography scapy psutil pywin32
+   ```
+
+3. **Enable logging for all successful and failed login attempts, system events, and object access.**
+   - Enable logging for all successful and failed login attempts, system events, and object access.
+   - Configure it via Local Group Policy:
+      ```
+      gpedit.msc > Windows Settings > Security Settings > Advanced Audit Policy Configuration
+      ```
+
+4. **Directory Structure Setup:** Create the following directories for storing generated evidence:
+   ```
+   C:\FinancialData
+   C:\Users\MichaelTan\AppData\Local
+   C:\Logs
+   C:\Temp
+   ```
+
+5. **Place the Scripts**
+      - Place the scripts in appropriate directories, such as:
+         ```
+         C:\AttackScripts
+         ```
+
+6. **Run the `main.py` Script:** Execute the main script to orchestrate all attacks.
+      ```bash
+      python main.py
+      ```
+
+### **On the Windows Victim VM:**
+1. **Network Traffic Monitoring:**
+   - Open Wireshark or Tshark on Kali to monitor network traffic between VMs.
+   - Capture traffic and save it as `network_traffic.pcap`.
+     ```bash
+     tshark -i eth0 -w network_traffic.pcap
+     ```
+   - **Google Chrome**: Install Chrome for the browser simulation.
+   - **Papercut SMTP**: Configure a local SMTP email server for the phishing simulation.
+
+2. **Prepare Attack Logs and Notes:**
+   - Use the Kali VM to craft phishing emails and record timestamps for attacks.
+
+# Simulation Workflow
+### Step 1: Infection Phase
+   - Simulate DNS poisoning using the `browser_simulation.py` script to redirect banking traffic.
+   - Simulate phishing emails using `email_simulation.py` to disable logging and cover tracks.
+
+### Step 2: Data Manipulation Phase
+   - Run `generate_financial_logs.py` to create anomalies in financial records..
+   - Use `event_log_generator.ps1` to manipulate Windows Event Logs.
+
+### Step 3: Malware and Exfiltration Phase
+   - Run `malware_simulator.py` to encrypt sensitive files and add persistence.
+   - Simulate data exfiltration with `network_traffic_generator.py` and capture traffic.
+
+# Artifacts Left Behind for Forensic Investigation
+1. **Windows Event Logs:**
+   - Captured in Security.evtx and System.evtx.
+
+2. **Financial Logs:**
+   - SQLite database generated in C:\FinancialData.
+
+3. **Email Artifacts:**
+   - Phishing email artifacts in C:\EmailLogs.
+
+4. **Browser Cache:**
+   - Found in C:\Users\MichaelTan\AppData\Local\Google\Chrome\User Data\Default.
+
+5. **Network Traffic PCAP:**
+   - Saved as network_traffic.pcap on the attacker or defender side.
+
+6. **Encrypted Files:**
+   - Found in C:\Temp\Encrypted_Files.
+
+# How to Verify the Simulation
+1. **Check Log Files:**
+   - Verify `execution_log.txt` to ensure all scripts executed successfully.
+
+2. **Inspect Artifacts:**
+   - Examine `Security.evtx` for login anomalies.
+   - Open `network_traffic.pcap` in Wireshark to analyze DNS poisoning and data exfiltration.
+
+3. **Reconstruct the Timeline:**
+   - Use Plaso (`log2timeline`) to create a forensic timeline of events.
+
+# How to Start Investigation
+1. **Collect Artifacts:**
+   - Use FTK Imager to create forensic images of the Windows VM.
+   - Transfer key files (logs, PCAP, financial data) to the Kali VM for analysis.
+
+2. **Analyze Evidence:**
+   - Use Sleuth Kit and Volatility on Kali to analyze memory dumps, disk images, and logs.
+   - Cross-reference timestamps in the PCAP file with logs to identify attack patterns.
+
+# File Structure for Kali VM and Windows VM
+
+This document provides a detailed breakdown of the directory structures for both the **Kali (Attacker)** and **Windows (Victim)** VMs used in the attack scenario
+
+## **Kali VM File Structure**
+The Kali VM is used as the attacker’s machine to monitor network traffic, analyze evidence, and simulate attack execution.
+
+### **Root Directory**
+```plaintext
+/home/kali/
+```
+
+### **Subdirectories**
+1. `/home/kali/scripts/`  
+Contains all scripts related to the attack.
+   ```
+   /home/kali/scripts/
+   ├── browser_activity/
+   │   └── browser_simulation.py
+   ├── email_simulation/
+   │   └── email_generator.py
+   ├── financial_logs/
+   │   └── generate_financial_logs.py
+   ├── log_manipulation/
+   │   └── event_log_generator.ps1
+   ├── malware_simulation/
+   │   └── malware_simulator.py
+   ├── network_traffic/
+   │   └── network_traffic_generator.py
+   ├── main.py
+   ```
+
+2. `/home/kali/evidence/`  
+Used to store evidence collected from the victim system during the investigation.
+   ```
+   /home/kali/evidence/
+   ├── memory_dump/
+   │   └── windows_memory_dump.raw
+   ├── disk_images/
+   │   └── victim_disk_image.dd
+   ├── logs/
+   │   ├── network_traffic.pcap
+   │   ├── execution_log.txt
+   │   └── event_logs/
+   │       ├── Security.evtx
+   │       └── System.evtx
+   ├── browser_cache/
+   │   └── ChromeHistory.db
+   ├── financial_data/
+   │   └── financial_logs.db
+   └── emails/
+      └── phishing_emails.eml
+   ```
+
+3. `/home/kali/tools/`  
+Contains tools installed for forensic analysis (not real directory; in built tools).
+   ```
+   /home/kali/tools/
+   ├── volatility/
+   ├── sleuthkit/
+   ├── tshark/
+   ├── bulk_extractor/
+   ├── plaso/
+   └── dc3dd/
+   ```
+
+## **Windows VM File Structure**
+The Windows VM is the victim machine where the attack scripts execute and evidence is generated.
+
+### **Root Directory**
+```plaintext
+C:\
+```
+
+### **Subdirectories**
+1. `C:\AttackScripts\`  
+Contains all attack scripts.
+   ```
+   C:\AttackScripts\
+   ├── browser_activity\
+   │   └── browser_simulation.py
+   ├── email_simulation\
+   │   └── email_generator.py
+   ├── financial_logs\
+   │   └── generate_financial_logs.py
+   ├── log_manipulation\
+   │   └── event_log_generator.ps1
+   ├── malware_simulation\
+   │   └── malware_simulator.py
+   ├── network_traffic\
+   │   └── network_traffic_generator.py
+   └── main.py
+   ```
+
+2. `C:\FinancialData\`  
+Contains financial logs and sensitive documents targeted by the attack.
+   ```
+   C:\FinancialData\
+   ├── Client_Transactions.xlsx
+   ├── Quarterly_Report.docx
+   └── Transaction_Logs_Backup.db
+   ```
+
+3. `C:\Logs\`  
+Stores logs generated by attack scripts or Windows event logs.
+   ```
+   C:\Logs\
+   ├── unauthorized_access.log
+   ├── USB_Access_Log.txt
+   └── disabled_logging.log
+   ```
+
+4. `C:\Temp\`  
+Temporary directory used for ransomware encryption and exfiltration simulation.
+   ```
+   C:\Temp\
+   ├── Encrypted_Files\
+   │   ├── file_1.txt
+   │   ├── file_2.txt
+   │   └── file_3.txt
+   └── credentials.txt
+   ```
+5. `C:\Users\MichaelTan\AppData\Local\`  
+Hidden files and directories used to simulate malicious activity.
+   ```
+   C:\Users\MichaelTan\AppData\Local\
+   ├── .hidden_wallets\
+   │   ├── wallet.dat
+   │   └── transaction_log.txt
+   ├── .malware_payload\
+   │   └── ransomware.exe
+   └── .unauthorized_exports\
+      ├── Dr_Wong_Transactions.csv
+      └── Client_Data_Dump.sql
+   ```
+
+6. `C:\EmailLogs\`  
+Contains phishing emails sent to and from Michael Tan’s account.
+   ```
+   C:\EmailLogs\
+   ├── phishing_email_1.eml
+   └── phishing_email_2.eml
+   ```
+7. `C:\Windows\Logs\`  
+Stores manipulated event logs for investigators.
+   ```
+   C:\Windows\Logs\
+   ├── Security.evtx
+   └── System.evtx
+   ```
+8. `C:\Users\MichaelTan\AppData\Local\Google\Chrome\User Data\Default\`  
+Stores browser history and cache files.
+   ```
+   C:\Users\MichaelTan\AppData\Local\Google\Chrome\User Data\Default\
+   ├── History
+   └── Cache
+   ```
+
+# Key Notes
+- Kali VM is used for:
+   - Monitoring network traffic using tshark or Wireshark.
+   - Analyzing disk images and memory dumps.
+   - Running forensic tools like Volatility, Sleuth Kit, and Plaso.
+
+- Windows VM is used for:
+   - Simulating the attack scenario by running all the attack scripts.
+   - Generating artifacts such as logs, encrypted files, and phishing emails for forensic investigation.
+   -Providing realistic evidence for analysis, including PCAP files and event logs.
