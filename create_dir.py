@@ -4,27 +4,28 @@ import json
 from datetime import datetime, timedelta
 import random
 
+# Updated directory structure
 directory_structure = {
-    "C:\\Users\\<Username>\\Documents\\FinancialData": [
+    os.path.expanduser(r"~\Documents\FinancialData"): [
         "Transactions_Backup.db",  # Populated
         "Client_Reports.xlsx",  # Blank
         "Performance_Review.docx"  # Blank
     ],
-    "C:\\Users\\<Username>\\Documents\\Work_Reports": [
+    os.path.expanduser(r"~\Documents\Work_Reports"): [
         "summary.txt",  # Populated
         "log_analysis_report.txt",  # Populated
         "encrypted_file_1.txt",  # Populated
         "encrypted_file_2.txt",  # Populated
     ],
-    "C:\\Users\\<Username>\\AppData\\Local\\Microsoft\\Outlook": [
+    os.path.expanduser(r"~\AppData\Local\Microsoft\Outlook"): [
         "internal_review.eml",  # Populated
         "q3_analysis_report.eml"  # Populated
     ],
-    "C:\\Users\\<Username>\\AppData\\Local\\Google\\Chrome\\User Data\\Default": [
+    os.path.expanduser(r"~\AppData\Local\Google\Chrome\User Data\Default"): [
         "History",  # Populated by browser_simulation.py
         "Cache"  # Populated by browser_simulation.py
     ],
-    "C:\\Windows\\System32\\drivers\\etc": [
+    r"C:\Windows\System32\drivers\etc": [
         "hosts"  # Modified in browser_simulation.py
     ]
 }
