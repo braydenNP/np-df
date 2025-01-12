@@ -4,55 +4,49 @@ import json
 from datetime import datetime, timedelta
 import random
 
-# Define directory and file structure
 directory_structure = {
-    "C:\\FinancialData": [
-        "Transaction_Logs_Backup.db",  # Populated
-        "Client_Transactions.xlsx",   # Blank (manually populated)
-        "Quarterly_Report.docx"       # Blank (manually populated)
+    "C:\\Users\\<Username>\\Documents\\FinancialData": [
+        "Transactions_Backup.db",  # Populated
+        "Client_Reports.xlsx",  # Blank
+        "Performance_Review.docx"  # Blank
     ],
-    "C:\\Temp\\Encrypted_Files": [
-        "file_1.txt", "file_2.txt", "file_3.txt"  # Populated
+    "C:\\Users\\<Username>\\Documents\\Work_Reports": [
+        "summary.txt",  # Populated
+        "log_analysis_report.txt",  # Populated
+        "encrypted_file_1.txt",  # Populated
+        "encrypted_file_2.txt",  # Populated
     ],
-    "C:\\Users\\MichaelTan\\AppData\\Local\\.hidden_wallets": [
-        "wallet.dat", "transaction_log.txt"  # Populated
+    "C:\\Users\\<Username>\\AppData\\Local\\Microsoft\\Outlook": [
+        "internal_review.eml",  # Populated
+        "q3_analysis_report.eml"  # Populated
     ],
-    "C:\\Users\\MichaelTan\\AppData\\Local\\.unauthorized_exports": [
-        "Dr_Wong_Transactions.csv", "Client_Data_Dump.sql"  # Populated
+    "C:\\Users\\<Username>\\AppData\\Local\\Google\\Chrome\\User Data\\Default": [
+        "History",  # Populated by browser_simulation.py
+        "Cache"  # Populated by browser_simulation.py
+    ],
+    "C:\\Windows\\System32\\drivers\\etc": [
+        "hosts"  # Modified in browser_simulation.py
     ]
 }
 
-# Helper functions
 def create_directory(path):
     if not os.path.exists(path):
         os.makedirs(path)
-        print(f"[INFO] Directory created: {path}")
+        print(f"[INFO] Created directory: {path}")
     else:
-        print(f"[INFO] Directory already exists: {path}")
+        print(f"[INFO] Directory exists: {path}")
 
-def create_or_populate_file(path):
+def create_file(path):
     if path.endswith(".db"):
         populate_database(path)
+    elif path.endswith(".eml"):
+        populate_email(path)
     elif path.endswith(".txt"):
         populate_text_file(path)
-    elif path.endswith(".csv"):
-        populate_csv_file(path)
-    elif path.endswith(".sql"):
-        populate_sql_file(path)
-    elif path.endswith(".dat"):
-        populate_wallet_file(path)
     else:
-        create_blank_file(path)
+        open(path, 'a').close()
+        print(f"[INFO] Created blank file: {path}")
 
-def create_blank_file(path):
-    if not os.path.exists(path):
-        with open(path, "w") as f:
-            pass
-        print(f"[INFO] Blank file created: {path}")
-    else:
-        print(f"[INFO] File already exists: {path}")
-
-# File population functions
 def populate_database(path):
     if not os.path.exists(path):
         conn = sqlite3.connect(path)
@@ -69,56 +63,29 @@ def populate_database(path):
                       (user, amount, timestamp, ip, anomaly_flag))
         conn.commit()
         conn.close()
-        print(f"[INFO] Database populated: {path}")
+        print(f"[INFO] Populated database: {path}")
+
+def populate_email(path):
+    if not os.path.exists(path):
+        with open(path, "w") as f:
+            f.write(f"From: Rachel Simmons <rachel@company.com>\n")
+            f.write(f"To: Michael Tan <michael@company.com>\n")
+            f.write("Subject: Q3 Review\n")
+            f.write("Body: Please find the Q3 analysis attached. Ensure you review it by EOD.\n")
+        print(f"[INFO] Populated email: {path}")
 
 def populate_text_file(path):
     if not os.path.exists(path):
         with open(path, "w") as f:
-            for i in range(20):  # Dummy lines
-                f.write(f"Line {i + 1}: This is dummy content.\n")
-        print(f"[INFO] Text file populated: {path}")
+            for i in range(10):
+                f.write(f"Entry {i + 1}: This is a dummy log entry.\n")
+        print(f"[INFO] Populated text file: {path}")
 
-def populate_csv_file(path):
-    if not os.path.exists(path):
-        with open(path, "w") as f:
-            f.write("TransactionID,User,Amount,Date,IP\n")
-            for i in range(1, 101):  # 100 dummy rows
-                user = random.choice(["Dr. Wong", "Michael Tan", "Rachel Simmons"])
-                amount = round(random.uniform(100, 25000), 2)
-                date = (datetime.now() - timedelta(days=random.randint(1, 30))).strftime('%Y-%m-%d')
-                ip = random.choice(["192.168.1.105", "10.0.0.54", "203.0.113.25"])
-                f.write(f"{i},{user},{amount},{date},{ip}\n")
-        print(f"[INFO] CSV file populated: {path}")
-
-def populate_sql_file(path):
-    if not os.path.exists(path):
-        with open(path, "w") as f:
-            f.write("CREATE TABLE exports (id INTEGER PRIMARY KEY, data TEXT);\n")
-            for i in range(50):  # 50 rows
-                f.write(f"INSERT INTO exports (id, data) VALUES ({i}, 'Exported Data {i}');\n")
-        print(f"[INFO] SQL file populated: {path}")
-
-def populate_wallet_file(path):
-    if not os.path.exists(path):
-        wallet_data = {
-            "wallet_id": "abc123",
-            "balance": 50000,
-            "transactions": [
-                {"id": 1, "amount": -5000, "date": "2024-01-01"},
-                {"id": 2, "amount": 15000, "date": "2024-01-05"}
-            ]
-        }
-        with open(path, "w") as f:
-            f.write(json.dumps(wallet_data, indent=4))
-        print(f"[INFO] Wallet file populated: {path}")
-
-# Main function
 def main():
     for directory, files in directory_structure.items():
         create_directory(directory)
         for file in files:
-            file_path = os.path.join(directory, file)
-            create_or_populate_file(file_path)
+            create_file(os.path.join(directory, file))
 
 if __name__ == "__main__":
     main()
