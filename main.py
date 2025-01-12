@@ -42,11 +42,12 @@ if __name__ == "__main__":
 
     # Step 2: Execute the rest of the scripts
     scripts = [
-        {"path": "browser_simulation.py", "type": "python"},
-        {"path": "email_simulation.py", "type": "python"},
-        {"path": "financial_logs.py", "type": "python"},
-        {"path": "log_manipulation.ps1", "type": "powershell"},
-        {"path": "malware_simulation.py", "type": "python"},
+        {"path": "browser_activity_simulation/browser_simulation.py", "type": "python"},
+        {"path": "email_simulation/email_simulation.py", "type": "python"},
+        {"path": "financial_log_simulation/financial_logs.py", "type": "python"},
+        {"path": "log_manipulation/log_manipulation.ps1", "type": "powershell"},
+        {"path": "malware_simulation/malware_simulation.py", "type": "python"},
+        {"path": "network_traffic_simulation/network_traffic_simulator.py", "type": "python"},
     ]
 
     log_message("Simulation started.")

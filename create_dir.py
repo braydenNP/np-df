@@ -38,15 +38,22 @@ def create_directory(path):
         print(f"[INFO] Directory exists: {path}")
 
 def create_file(path):
-    if path.endswith(".db"):
-        populate_database(path)
-    elif path.endswith(".eml"):
-        populate_email(path)
-    elif path.endswith(".txt"):
-        populate_text_file(path)
-    else:
-        open(path, 'a').close()
-        print(f"[INFO] Created blank file: {path}")
+    try:
+        if path.endswith(".db"):
+            populate_database(path)
+        elif path.endswith(".eml"):
+            populate_email(path)
+        elif path.endswith(".txt"):
+            populate_text_file(path)
+        else:
+            if not os.path.exists(path):  # Ensure it doesn't overwrite an existing file
+                open(path, 'a').close()
+                print(f"[INFO] Created blank file: {path}")
+    except PermissionError as e:
+        print(f"[ERROR] Permission denied for {path}: {e}")
+    except Exception as e:
+        print(f"[ERROR] Failed to create file {path}: {e}")
+
 
 def populate_database(path):
     if not os.path.exists(path):
@@ -86,6 +93,10 @@ def main():
     for directory, files in directory_structure.items():
         create_directory(directory)
         for file in files:
+            # Skip specific problematic entries
+            if "Cache" in file:
+                print(f"[INFO] Skipping creation of {file}")
+                continue
             create_file(os.path.join(directory, file))
 
 if __name__ == "__main__":
