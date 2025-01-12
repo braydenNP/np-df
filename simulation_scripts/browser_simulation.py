@@ -89,4 +89,4 @@ def simulate_browsing_activity():
 
 if __name__ == "__main__":
     manipulate_dns()
-    simulate_browsing_activity(
+    simulate_browsing_activity()
