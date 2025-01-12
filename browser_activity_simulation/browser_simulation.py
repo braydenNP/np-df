@@ -9,20 +9,16 @@ import json
 from datetime import datetime
 
 def manipulate_dns():
-    """Simulate DNS cache poisoning by redirecting bank traffic."""
-    try:
-        with open("C:\\Windows\\System32\\drivers\\etc\\hosts", "a") as f:
-            f.write("203.0.113.25 www.fakebank.com\n")
-        print("[INFO] DNS cache manipulated to redirect bank traffic.")
-    except PermissionError:
-        print("[ERROR] Permission denied: Unable to modify hosts file.")
+    """Simulate DNS cache poisoning by logging the event (no actual file modification)."""
+    print("[INFO] Simulating DNS cache poisoning for banking-related traffic.")
 
 def simulate_browsing_activity():
     """Simulate realistic browsing activity with hidden artifacts."""
+    # Replace fake domains with real, commonly accessible ones
     sites = [
-        {"url": "https://www.fakebank.com", "search_terms": ["transfer $25,000 to crypto wallet", "disable fraud detection"]},
-        {"url": "https://www.cryptowallet.com", "search_terms": ["create anonymous wallet", "send BTC"]},
-        {"url": "https://darkwebforum.com", "search_terms": ["laundering money", "secure transactions"]},
+        {"url": "https://www.wikipedia.org", "search_terms": ["financial fraud", "cryptocurrency"]},
+        {"url": "https://www.duckduckgo.com", "search_terms": ["anonymous transactions", "crypto wallet setup"]},
+        {"url": "https://www.reddit.com", "search_terms": ["money laundering techniques", "secure transactions"]},
     ]
 
     user_agents = [
@@ -32,7 +28,7 @@ def simulate_browsing_activity():
     ]
 
     options = Options()
-    options.add_argument("--headless")
+    options.add_argument("--headless")  # Run in headless mode
     options.add_argument("--disable-blink-features=AutomationControlled")
     options.add_argument(f"user-agent={random.choice(user_agents)}")
     driver = webdriver.Chrome(options=options)
@@ -47,20 +43,25 @@ def simulate_browsing_activity():
 
             time.sleep(random.uniform(2, 5))
 
-            # Simulate searching
-            search_box = driver.find_element(By.NAME, "q")
-            search_term = random.choice(site["search_terms"])
-            search_box.send_keys(search_term + Keys.RETURN)
-            time.sleep(random.uniform(2, 4))
+            # Simulate searching, if a search box is available
+            try:
+                search_box = driver.find_element(By.NAME, "q")
+                search_term = random.choice(site["search_terms"])
+                search_box.send_keys(search_term + Keys.RETURN)
+                time.sleep(random.uniform(2, 4))
+            except Exception:
+                print(f"[WARNING] No search box found on {site['url']}")
 
-            # Interact with links
+            # Interact with links on the page
             links = driver.find_elements(By.TAG_NAME, "a")
-            for link in links[:3]:
-                print(f"[INFO] Visiting link: {link.get_attribute('href')}")
-                link.click()
-                time.sleep(random.uniform(2, 5))
+            for link in links[:3]:  # Interact with up to 3 links
+                href = link.get_attribute("href")
+                if href:
+                    print(f"[INFO] Visiting link: {href}")
+                    driver.get(href)
+                    time.sleep(random.uniform(2, 5))
 
-            # Create temporary files (simulating downloaded malware)
+            # Simulate creating temporary files (e.g., fake malware artifacts)
             download_dir = f"C:\\Users\\{os.getlogin()}\\Downloads"
             os.makedirs(download_dir, exist_ok=True)
             temp_file = os.path.join(download_dir, f"{random.randint(1000, 9999)}.tmp")
