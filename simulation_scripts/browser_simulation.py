@@ -2,19 +2,22 @@ from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.chrome.options import Options
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
 import time
 import random
 import os
 import json
 from datetime import datetime
 
+
 def manipulate_dns():
     """Simulate DNS cache poisoning by logging the event (no actual file modification)."""
     print("[INFO] Simulating DNS cache poisoning for banking-related traffic.")
 
+
 def simulate_browsing_activity():
     """Simulate realistic browsing activity with hidden artifacts."""
-    # Replace fake domains with real, commonly accessible ones
     sites = [
         {"url": "https://www.wikipedia.org", "search_terms": ["financial fraud", "cryptocurrency"]},
         {"url": "https://www.duckduckgo.com", "search_terms": ["anonymous transactions", "crypto wallet setup"]},
@@ -38,15 +41,21 @@ def simulate_browsing_activity():
             driver.get(site["url"])
             print(f"[INFO] Browsing {site['url']}")
 
+            # Wait for the page to load fully
+            WebDriverWait(driver, 10).until(
+                EC.presence_of_element_located((By.TAG_NAME, "body"))
+            )
+
             # Simulate adding cookies
             driver.add_cookie({"name": "session", "value": f"{random.randint(1000, 9999)}", "path": "/"})
 
-            time.sleep(random.uniform(2, 5))
-
-            # Simulate searching, if a search box is available
+            # Try searching for terms if a search box is available
             try:
-                search_box = driver.find_element(By.NAME, "q")
+                search_box = WebDriverWait(driver, 5).until(
+                    EC.presence_of_element_located((By.NAME, "q"))
+                )
                 search_term = random.choice(site["search_terms"])
+                search_box.clear()
                 search_box.send_keys(search_term + Keys.RETURN)
                 time.sleep(random.uniform(2, 4))
             except Exception:
@@ -59,6 +68,9 @@ def simulate_browsing_activity():
                 if href:
                     print(f"[INFO] Visiting link: {href}")
                     driver.get(href)
+                    WebDriverWait(driver, 5).until(
+                        EC.presence_of_element_located((By.TAG_NAME, "body"))
+                    )
                     time.sleep(random.uniform(2, 5))
 
             # Simulate creating temporary files (e.g., fake malware artifacts)
@@ -74,6 +86,7 @@ def simulate_browsing_activity():
 
     driver.quit()
 
+
 if __name__ == "__main__":
     manipulate_dns()
-    simulate_browsing_activity()
+    simulate_browsing_activity(

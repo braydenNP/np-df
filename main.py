@@ -37,17 +37,17 @@ def setup_environment():
         log_message(f"Critical error in create_dir.py: {e}")
 
 if __name__ == "__main__":
-    # Step 1: Set up directories and files
+    # Set up directories and files
     setup_environment()
 
-    # Step 2: Execute the rest of the scripts
+    # Execute the rest of the scripts
     scripts = [
-        {"path": "browser_activity_simulation/browser_simulation.py", "type": "python"},
-        {"path": "email_simulation/email_simulation.py", "type": "python"},
-        {"path": "financial_log_simulation/financial_logs.py", "type": "python"},
-        {"path": "log_manipulation/log_manipulation.ps1", "type": "powershell"},
-        {"path": "malware_simulation/malware_simulation.py", "type": "python"},
-        {"path": "network_traffic_simulation/network_traffic_simulator.py", "type": "python"},
+        {"path": "simulation_scripts/browser_simulation.py", "type": "python"},
+        {"path": "simulation_scripts/email_simulation.py", "type": "python"},
+        {"path": "simulation_scripts/financial_logs_generation.py", "type": "python"},
+        {"path": "simulation_scripts/log_manipulation.ps1", "type": "powershell"},
+        {"path": "simulation_scripts/malware_emulation.py", "type": "python"},
+        {"path": "simulation_scripts/network_traffic_simulation.py", "type": "python"},
     ]
 
     log_message("Simulation started.")
