@@ -111,15 +111,25 @@ def simulate_browsing_activity():
 
             # Interact with links on the page
             links = driver.find_elements(By.TAG_NAME, "a")
-            for link in links[:3]:  # Interact with up to 3 links
-                href = link.get_attribute("href")
-                if href:
-                    print(f"[INFO] Visiting link: {href}")
-                    driver.get(href)
-                    WebDriverWait(driver, 5).until(
-                        EC.presence_of_element_located((By.TAG_NAME, "body"))
-                    )
-                    time.sleep(random.uniform(2, 5))
+            for i in range(3):
+                # Wait to ensure page is fully loaded
+                WebDriverWait(driver, 10).until(
+                    EC.presence_of_element_located((By.TAG_NAME, "body"))
+                )
+                
+                # Get fresh links for each iteration
+                links = driver.find_elements(By.TAG_NAME, "a")
+                
+                if i < len(links):
+                    href = links[i].get_attribute("href")
+                    if href:
+                        print(f"[INFO] Visiting link: {href}")
+                        driver.get(href)
+                        time.sleep(random.uniform(2, 5))
+                else:
+                    print("[INFO] Not enough links on the page")
+                    break
+
 
             # Simulate creating temporary files (e.g., fake malware artifacts)
             download_dir = f"C:\\Users\\{os.getlogin()}\\Downloads"
