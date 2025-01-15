@@ -33,6 +33,9 @@ def simulate_browsing_activity():
 
     options = Options()
     options.add_argument("--headless")  # Run in headless mode
+    options.add_argument(r"--user-data-dir=C:\Users\space\AppData\Local\Google\Chrome\User Data")
+    # Specify which profile within that folder to use
+    options.add_argument(r"--profile-directory=Default")
     options.add_argument("--disable-blink-features=AutomationControlled")
     options.add_argument(f"user-agent={random.choice(user_agents)}")
     driver = webdriver.Chrome(options=options)
