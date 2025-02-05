@@ -1,72 +1,74 @@
 import mailbox
 
-# Path to your mbox file
+# Define the path to the mbox file.
 mbox_path = "mbox"
 
-# Open the mbox file for reading
+# Open the specified mbox file in read mode.
 mbox = mailbox.mbox(mbox_path)
 
-# Iterate through each message in the mbox, numbering them from 1 upwards
+# Process each message in the mbox, starting with the first message.
 for i, message in enumerate(mbox, start=1):
-    # Retrieve header fields with sensible fallbacks if they don't exist
+    # Retrieve essential email headers, providing default values if any headers are missing.
     from_ = message.get('From', 'Unknown')
     to_ = message.get('To', 'Unknown')
     subj = message.get('Subject', 'No Subject')
     date_ = message.get('Date', 'Unknown')
     msg_id = message.get('Message-ID', 'Unknown')
 
-    # Initialize a list to collect the text body (may be multiple parts if multipart)
+    # Initialize a list to hold parts of the email body.
     body = []
 
-    # Check if the message is multipart (contains multiple parts)
+    # Determine if the email message consists of multiple parts.
     if message.is_multipart():
-        # Walk over each part of the multipart message
+        # Iterate through each part of the email message.
         for part in message.walk():
-            # Get the MIME content type (e.g. text/plain, text/html, etc.)
+            # Identify the MIME content type of each part.
             ctype = part.get_content_type()
-            # Check the content disposition for "attachment" or inline
+            # Retrieve content disposition to check for attachments.
             cdisp = str(part.get('Content-Disposition'))
-            
-            # Only process text/plain parts that are not marked as an attachment
+
+            # Handle only text/plain parts and ignore attachments.
             if ctype == 'text/plain' and 'attachment' not in cdisp:
-                # Decode the payload to raw bytes
+                # Retrieve the email body payload in raw bytes.
                 payload_bytes = part.get_payload(decode=True)
-                
-                # Determine the best guess for the character set; default to UTF-8 if unknown
+                # Estimate the character set or default to UTF-8.
                 charset = part.get_content_charset() or 'utf-8'
+                
                 try:
-                    # Decode the raw bytes into a string using the specified charset
+                    # Decode the payload using the identified or default character set.
                     text = payload_bytes.decode(charset, errors='replace')
                 except:
-                    # Fallback decoding in case the specified charset fails
+                    # Handle potential decoding errors gracefully.
                     text = payload_bytes.decode('utf-8', errors='replace')
 
-                # Append the decoded text to our body list
+                # Append the decoded text to the body list.
                 body.append(text)
     else:
-        # For non-multipart messages, there's only a single payload
+        # Handle non-multipart emails which have a single payload.
         payload_bytes = message.get_payload(decode=True)
         if payload_bytes:
+            # Estimate the character set or use UTF-8 as fallback.
             charset = message.get_content_charset() or 'utf-8'
             try:
+                # Decode the single payload using the identified or default charset.
                 text = payload_bytes.decode(charset, errors='replace')
             except:
+                # Provide a fallback decoding strategy in case of charset issues.
                 text = payload_bytes.decode('utf-8', errors='replace')
             body.append(text)
 
-    # Combine all body parts (if multiple) into one continuous string, trimmed of extra whitespace
+    # Concatenate all parts of the body into a single string and remove extra whitespace.
     full_body = "\n".join(body).strip()
 
-    # Print a separator for visual clarity
+    # Output formatting: Display a separator line for clarity.
     print("=" * 80)
-    # Print the message index and essential email header information
+    # Output essential email metadata and the body.
     print(f"Email {i}")
     print(f"From: {from_}")
     print(f"To: {to_}")
     print(f"Subject: {subj}")
     print(f"Date: {date_}")
     print(f"Message ID: {msg_id}")
-    # Print the extracted plain text body
     print("\n--- Message Body ---")
     print(full_body)
     print("=" * 80)
